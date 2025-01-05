@@ -4,6 +4,7 @@
       <h1>Transferências</h1>
     </div>
 
+    <!-- Formulário para criar uma nova transferência -->
     <div class="form-container">
       <form @submit.prevent="criarTransferencia">
         <div class="form-group">
@@ -22,9 +23,11 @@
       </form>
     </div>
 
+    <!-- Mensagens de erro ou sucesso -->
     <p v-if="erro" class="erro">{{ erro }}</p>
     <p v-if="sucesso" class="sucesso">{{ sucesso }}</p>
 
+    <!-- Tabela para exibir transferências criadas -->
     <div class="table-container">
       <h2>Transferências Criadas</h2>
       <table>
@@ -38,6 +41,7 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Listando cada transferência -->
           <tr v-for="transferencia in transferencias" :key="transferencia.id">
             <td>{{ transferencia.id }}</td>
             <td>{{ transferencia.externalId }}</td>
@@ -51,59 +55,67 @@
   </div>
 </template>
 
-<script >
+<script>
 import axios from "axios";
 
 export default {
   data() {
     return {
+      // Dados do formulário para criar transferência
       novaTransferencia: {
         externalId: "",
         amount: "",
         expectedOn: "",
       },
+      // Lista de transferências recebidas do backend
       transferencias: [],
+      // Mensagens de erro ou sucesso
       erro: null,
       sucesso: null,
     };
   },
   methods: {
+    // Função para carregar transferências do backend
     carregarTransferencias() {
       axios
         .get("http://localhost:3000/transfers")
         .then((res) => {
-          this.transferencias = res.data;
+          this.transferencias = res.data; 
         })
         .catch(() => {
-          this.erro = "Erro ao buscar transferências.";
+          this.erro = "Erro ao buscar transferências."; 
         });
     },
+    // Função para criar uma nova transferência com todos os campos que devem estar preenchidos
     criarTransferencia() {
       if (!this.novaTransferencia.externalId || !this.novaTransferencia.amount || !this.novaTransferencia.expectedOn) {
         this.erro = "Todos os campos são obrigatórios!";
         return;
       }
 
+      // Validação para a data não ser no passado
       if (new Date(this.novaTransferencia.expectedOn) < new Date()) {
         this.erro = "A data de vencimento não pode ser no passado!";
         return;
       }
 
+      // Fazendo o POST para criar a transferência no backend
       axios
         .post("http://localhost:3000/transfers", this.novaTransferencia)
         .then(() => {
-          this.erro = null;
-          this.sucesso = "Transferência criada com sucesso!";
-          this.novaTransferencia = { externalId: "", amount: "", expectedOn: "" };
-          this.carregarTransferencias();
+          this.erro = null; 
+          this.sucesso = "Transferência criada com sucesso!"; 
+          this.novaTransferencia = { externalId: "", amount: "", expectedOn: "" }; 
+          this.carregarTransferencias(); 
         })
         .catch(() => {
-          this.erro = "Erro ao criar transferência.";
+          this.erro = "Erro ao criar transferência."; 
         });
     },
   },
+  // Método chamado quando o componente é montado
   mounted() {
-    this.carregarTransferencias();
+    this.carregarTransferencias(); 
   },
 };
 </script>
