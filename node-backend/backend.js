@@ -9,10 +9,10 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Configuração do Banco de Dados SQLite
+//  Banco de Dados SQLite
 const db = new sqlite3.Database("transfers.db"); 
 
-// Criação da tabela no banco de dados 
+// Criação da tabela no banco de dados de como irá ficar
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS transfers (
@@ -40,7 +40,7 @@ app.post("/transfers", (req, res) => {
     return res.status(400).json({ error: "Todos os campos são obrigatórios!" });
   }
 
-  // Query para inserir os dados da transferência no banco
+  // Inserir os dados da transferência no banco
   const query = `INSERT INTO transfers (externalId, amount, expectedOn) VALUES (?, ?, ?)`;
   db.run(query, [externalId, amount, expectedOn], function (err) {
     if (err) {
@@ -48,7 +48,7 @@ app.post("/transfers", (req, res) => {
       return res.status(500).json({ error: "Erro ao salvar no banco de dados." });
     }
 
-    // Retorno da transferência criada com o ID gerado automaticamente
+    // Retorno da transferência criada com o ID
     res.status(201).json({
       id: this.lastID, 
       externalId,
