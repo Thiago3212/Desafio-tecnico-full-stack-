@@ -94,8 +94,10 @@ export default {
       }
 
       // Validação para a data não ser no passado
-      if (new Date(this.novaTransferencia.expectedOn) < new Date()) {
-        this.erro = "A data de vencimento não pode ser no passado!";
+      const hoje = new Date(); 
+      const dataEsperada = new Date(this.novaTransferencia.expectedOn); 
+      if (dataEsperada < hoje) {
+        this.erro = "A data da transferencia não pode ser no passado!";
         return;
       }
 
